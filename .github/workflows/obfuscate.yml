@@ -1,0 +1,67 @@
+name: Obfuscate src.py to main.py
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src.py'
+      - '.github/workflows/obfuscate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  obfuscate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Obfuscate src.py -> main.py
+        run: |
+          python3 << 'EOF'
+          import zlib
+          import base64
+          from pathlib import Path
+
+          src = Path('src.py').read_text(encoding='utf-8')
+          compressed = zlib.compress(src.encode('utf-8'), level=9)
+          encoded = base64.b64encode(compressed).decode('ascii')
+
+          # Split long base64 string into lines for readability
+          lines = [encoded[i:i+76] for i in range(0, len(encoded), 76)]
+          b64_body = '\n'.join(lines)
+
+          main_content = f'''#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+import zlib,base64
+_="""{b64_body}"""
+exec(zlib.decompress(base64.b64decode(_)).decode())
+'''
+
+          Path('main.py').write_text(main_content, encoding='utf-8')
+          print('Obfuscated src.py -> main.py successfully')
+          print(f'main.py size: {Path("main.py").stat().st_size} bytes')
+          EOF
+
+      - name: Commit and push main.py
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add main.py
+
+          if git diff --staged --quiet; then
+            echo "No changes to main.py, skipping commit"
+          else
+            git commit -m "chore: obfuscate src.py -> main.py [skip ci]"
+            git push
+          fi
