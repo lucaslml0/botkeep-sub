@@ -14,14 +14,14 @@ import threading
 import platform
 from pathlib import Path
 # 环境变量配置
-PORT = int(os.environ.get('PORT', 3080))       # http服务端口
+PORT = int(os.environ.get('PORT', 37181))       # http服务端口
 SUB_PATH = os.environ.get('SUB_PATH', '46b0d048-a766-4fd4-8a01-da05e37a7f5f')   # 订阅token
 config = {
     'UUID': os.environ.get('UUID', '46b0d048-a766-4fd4-8a01-da05e37a7f5f'), # 节点UUID，使用哪吒v1时在不不同的平台部署需要修改，否则agent会覆盖
     'NEZHA_SERVER': os.environ.get('NEZHA_SERVER', ''), # 哪吒面板地址，v1格式: nezha.xxx.com:8008  v0格式： nezha.xxx.com
     'NEZHA_PORT': os.environ.get('NEZHA_PORT', ''),     # 哪吒v1请留空，哪吒v0 agent端口
     'NEZHA_KEY': os.environ.get('NEZHA_KEY', ''),       # 哪吒v1的NZ_CLIENT_SECRET或哪吒v0-agent密钥
-    'ARGO_DOMAIN': os.environ.get('ARGO_DOMAIN', 'katabump.6a105.ccw.cc'),   # 固定隧道域名,留空即启用临时隧道
+    'ARGO_DOMAIN': os.environ.get('ARGO_DOMAIN', 'katabump.6a105.ccwu.cc'),   # 固定隧道域名,留空即启用临时隧道
     'ARGO_AUTH': os.environ.get('ARGO_AUTH', 'eyJhIjoiMjViMTA5YzljY2QwOTJlMDhlOWMwZDQxMmNlMGJkYTciLCJ0IjoiNWE4YWRkZjUtNGMyNC00YTFmLTgwMGItY2E3NTI2NzE5MzhjIiwicyI6Ik9URTJNbVZqWkRBdE5XUmxaaTAwTTJFeUxUazBNR1V0TWpkbE5HWTFPVGMwWVdWaiJ9'),       # 固定隧道token或json,留空即启用临时隧道,json获取:https://json.zone.id
     'ARGO_PORT': os.environ.get('ARGO_PORT', '8001'),   # argo端口 使用固定隧道token,cloudflare后台设置的端口需和这里对应
     'CFIP': os.environ.get('CFIP', 'saas.sin.fan'),     # 优选域名或优选ip
